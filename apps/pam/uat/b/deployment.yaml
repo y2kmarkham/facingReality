@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pam-preview-cluster-html
+  namespace: demo
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Preview Cluster</title>
+        <style>
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+                font-family: Arial, sans-serif;
+                font-size: 48px;
+                background-color: #3498db;
+                color: white;
+            }
+        </style>
+    </head>
+    <body>
+        <div>this is preview pam-gateway</div>
+    </body>
+    </html>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pam-preview-cluster
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pam-preview-cluster
+  template:
+    metadata:
+      labels:
+        app: pam-preview-cluster
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: html
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: html
+        configMap:
+          name: pam-preview-cluster-html
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pam-preview-cluster
+  namespace: demo
+spec:
+  selector:
+    app: pam-preview-cluster
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP
