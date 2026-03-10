@@ -1,3 +1,3 @@
 image:
   tag: musl
-replicaCount: 2
+replicaCount: 5
