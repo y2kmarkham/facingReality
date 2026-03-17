@@ -1,3 +1,6 @@
+project:
+  name: fake-demo
+
 replicaCount: 1
 
 image:
