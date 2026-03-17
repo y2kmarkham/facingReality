@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: fake-demo
+  name: fake-identity-gateway
   namespace: argocd
 spec:
   sourceRepos: ['*']
