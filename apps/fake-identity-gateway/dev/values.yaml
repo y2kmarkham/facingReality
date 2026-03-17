@@ -1,3 +1,6 @@
+project:
+  name: fake-identity-gateway
+
 replicaCount: 1
 
 image:
