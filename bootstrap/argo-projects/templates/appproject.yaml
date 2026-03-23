@@ -4,13 +4,13 @@ apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
   name: {{ .name }}
-  namespace: {{ .namespace }}
+  namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "-1"
 spec:
   sourceRepos:
     - '*'
   destinations:
-    - namespace: '*'
+    - namespace: {{ .namespace }}
       server: '*'
 {{- end }}
