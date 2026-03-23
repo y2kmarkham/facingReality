@@ -1,7 +1,0 @@
-projects:
-  - name: fake-pam-gateway
-    namespace: fake-pam-gateway
-  - name: fake-demo
-    namespace: fake-demo
-  - name: fake-identity-gateway
-    namespace: fake-identity-gateway

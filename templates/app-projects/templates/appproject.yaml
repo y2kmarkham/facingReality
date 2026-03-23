@@ -1,12 +1,16 @@
+{{- range .Values.projects }}
+---
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name:  {{ .Values.projectName }}
+  name: {{ .name }}
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "-1"
 spec:
-  sourceRepos: ['*']
+  sourceRepos:
+    - '*'
   destinations:
-    - namespace: '*'
+    - namespace: {{ .name }}
       server: '*'
+{{- end }}
