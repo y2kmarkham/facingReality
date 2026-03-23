@@ -2,3 +2,4 @@ projects:
   - name: fake-pam-gateway
   - name: fake-demo
   - name: fake-identity-gateway
+  - name: fake-projects
