@@ -1,0 +1,106 @@
+name: Argo Traffic Switch
+
+on:
+  workflow_dispatch:
+    inputs:
+      cluster:
+        description: 'Cluster to submit the workflow to'
+        required: true
+        default: 'a'
+        type: choice
+        options:
+          - a
+          - b
+      active-weight:
+        description: 'Active cluster traffic weight (0-100)'
+        required: true
+        default: '0'
+      preview-weight:
+        description: 'Preview cluster traffic weight (0-100)'
+        required: true
+        default: '100'
+      scale-down-apps:
+        description: 'Comma-separated apps to scale down (e.g. fake-pam-gateway,fake-demo)'
+        required: true
+        default: 'fake-pam-gateway'
+      scale-down-replicas:
+        description: 'Replica count after scale-down'
+        required: true
+        default: '0'
+
+jobs:
+  trigger-argo-workflow:
+    name: Switch ALB Traffic
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Resolve Argo Server URL and token
+        id: resolve
+        run: |
+          if [ "${{ github.event.inputs.cluster }}" = "a" ]; then
+            echo "argo_url=http://aop-sandbox-a-workflows-alb-588295976.ap-east-1.elb.amazonaws.com" >> $GITHUB_OUTPUT
+            echo "argo_token=${{ secrets.ARGO_TOKEN_A }}" >> $GITHUB_OUTPUT
+          else
+            echo "argo_url=http://aop-sandbox-b-workflows-alb-162777956.ap-east-1.elb.amazonaws.com" >> $GITHUB_OUTPUT
+            echo "argo_token=${{ secrets.ARGO_TOKEN_B }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Submit workflow via Argo API
+        id: submit
+        run: |
+          RESPONSE=$(curl -sf \
+            -X POST \
+            -H "Authorization: Bearer ${{ steps.resolve.outputs.argo_token }}" \
+            -H "Content-Type: application/json" \
+            "${{ steps.resolve.outputs.argo_url }}/api/v1/workflows/argo-workflows/submit" \
+            -d '{
+              "resourceKind": "WorkflowTemplate",
+              "resourceName": "switching-template",
+              "submitOptions": {
+                "parameters": [
+                  "active-weight=${{ github.event.inputs.active-weight }}",
+                  "preview-weight=${{ github.event.inputs.preview-weight }}",
+                  "scale-down-apps=${{ github.event.inputs.scale-down-apps }}",
+                  "scale-down-replicas=${{ github.event.inputs.scale-down-replicas }}"
+                ]
+              }
+            }')
+
+          echo "$RESPONSE" | jq .
+          WORKFLOW_NAME=$(echo "$RESPONSE" | jq -r '.metadata.name')
+          echo "workflow_name=$WORKFLOW_NAME" >> $GITHUB_OUTPUT
+          echo "Submitted: $WORKFLOW_NAME"
+
+      - name: Poll workflow until complete
+        run: |
+          WORKFLOW=${{ steps.submit.outputs.workflow_name }}
+          ARGO_URL=${{ steps.resolve.outputs.argo_url }}
+          TOKEN=${{ steps.resolve.outputs.argo_token }}
+
+          echo "Watching $WORKFLOW ..."
+          echo "$ARGO_URL/workflows/argo-workflows/$WORKFLOW"
+
+          for i in $(seq 1 30); do
+            PHASE=$(curl -sf \
+              -H "Authorization: Bearer $TOKEN" \
+              "$ARGO_URL/api/v1/workflows/argo-workflows/$WORKFLOW" \
+              | jq -r '.status.phase // "Pending"')
+
+            echo "[$i/30] Phase: $PHASE"
+
+            case "$PHASE" in
+              Succeeded)
+                echo "Workflow succeeded."
+                exit 0
+                ;;
+              Failed|Error)
+                echo "Workflow failed."
+                exit 1
+                ;;
+            esac
+
+            sleep 10
+          done
+
+          echo "Timed out."
+          exit 1
