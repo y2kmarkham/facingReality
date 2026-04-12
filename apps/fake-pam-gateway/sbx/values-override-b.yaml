@@ -1,0 +1,3 @@
+bgColor: "#3498db"
+displayText: "PAM Gateway - Preview (Cluster B)"
+replicaCount: 2

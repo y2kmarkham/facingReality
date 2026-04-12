@@ -1,0 +1,3 @@
+bgColor: "#3498db"
+displayText: "Identity Gateway - Preview (Cluster B)"
+replicaCount: 2

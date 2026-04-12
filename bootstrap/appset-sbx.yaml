@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: sbx-apps
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - git:
+        repoURL: https://github.com/y2kmarkham/facingReality.git
+        revision: main
+        files:
+          - path: apps/*/sbx/values.yaml
+        values:
+          cluster: a
+  template:
+    metadata:
+      name: '{{ index .path.segments 1 }}-sbx'
+      labels:
+        app: '{{ index .path.segments 1 }}'
+        env: sbx
+    spec:
+      project: default
+      sources:
+        - repoURL: https://github.com/y2kmarkham/facingReality.git
+          targetRevision: main
+          ref: values
+        - repoURL: https://github.com/y2kmarkham/facingReality.git
+          targetRevision: main
+          path: templates/web-app
+          helm:
+            valueFiles:
+              - '$values/apps/{{ index .path.segments 1 }}/sbx/values.yaml'
+              - '$values/apps/{{ index .path.segments 1 }}/sbx/values-override-{{ .values.cluster }}.yaml'
+            ignoreMissingValueFiles: true
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{ index .path.segments 1 }}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true

@@ -1,0 +1,3 @@
+bgColor: "#2ecc71"
+displayText: "Demo App - Active (Cluster A)"
+replicaCount: 1

@@ -1,0 +1,3 @@
+bgColor: "#2ecc71"
+displayText: "Identity Gateway - Active (Cluster A)"
+replicaCount: 2

@@ -1,0 +1,3 @@
+bgColor: "#3498db"
+displayText: "Demo App - Preview (Cluster B)"
+replicaCount: 2

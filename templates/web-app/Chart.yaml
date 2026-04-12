@@ -1,0 +1,6 @@
+apiVersion: v2
+name: web-app
+description: Generic nginx web app for blue-green demo
+type: application
+version: 0.1.0
+appVersion: "1.0"

@@ -1,0 +1,26 @@
+appName: fake-demo
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: alpine
+  pullPolicy: IfNotPresent
+
+resources:
+  requests:
+    memory: "64Mi"
+    cpu: "100m"
+  limits:
+    memory: "128Mi"
+    cpu: "200m"
+
+appTitle: "Demo App"
+bgColor: "#333333"
+displayText: "Demo App"
+
+ingress:
+  enabled: true
+  scheme: internet-facing
+  targetType: ip
+  groupName: sbx-apps
+  listenPorts: '[{"HTTP": 80}]'
