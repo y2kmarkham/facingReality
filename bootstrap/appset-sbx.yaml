@@ -16,7 +16,7 @@ spec:
           cluster: a
   template:
     metadata:
-      name: '{{ index .path.segments 1 }}-sbx'
+      name: '{{ index .path.segments 1 }}'
       labels:
         app: '{{ index .path.segments 1 }}'
         env: sbx
