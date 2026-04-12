@@ -1,23 +1,12 @@
-{{- if .Values.ingress.enabled }}
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+{{- if .Values.targetGroupBinding.enabled }}
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
 metadata:
   name: {{ .Values.appName }}
-  annotations:
-    kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/scheme: {{ .Values.ingress.scheme }}
-    alb.ingress.kubernetes.io/target-type: {{ .Values.ingress.targetType }}
-    alb.ingress.kubernetes.io/group.name: {{ .Values.ingress.groupName }}
-    alb.ingress.kubernetes.io/listen-ports: '{{ .Values.ingress.listenPorts }}'
 spec:
-  rules:
-  - http:
-      paths:
-      - path: /{{ .Values.appName }}
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ .Values.appName }}-active
-            port:
-              number: 80
+  targetGroupARN: {{ required "targetGroupBinding.targetGroupARN is required when enabled" .Values.targetGroupBinding.targetGroupARN }}
+  targetType: {{ .Values.targetGroupBinding.targetType }}
+  serviceRef:
+    name: {{ .Values.appName }}-active
+    port: 80
 {{- end }}

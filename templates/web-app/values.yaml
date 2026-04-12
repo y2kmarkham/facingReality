@@ -18,9 +18,7 @@ appTitle: "Web App"
 bgColor: "#333333"
 displayText: "Hello from web-app"
 
-ingress:
-  enabled: true
-  scheme: internet-facing
+targetGroupBinding:
+  enabled: false
+  targetGroupARN: ""
   targetType: ip
-  groupName: sbx-apps
-  listenPorts: '[{"HTTP": 80}]'

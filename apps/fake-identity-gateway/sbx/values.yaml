@@ -18,9 +18,7 @@ appTitle: "Identity Gateway"
 bgColor: "#333333"
 displayText: "Identity Gateway"
 
-ingress:
-  enabled: true
-  scheme: internet-facing
+targetGroupBinding:
+  enabled: false
+  targetGroupARN: ""
   targetType: ip
-  groupName: sbx-apps
-  listenPorts: '[{"HTTP": 80}]'

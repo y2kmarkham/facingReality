@@ -13,7 +13,7 @@ spec:
         files:
           - path: apps/*/sbx/values.yaml
         values:
-          cluster: a
+          cluster: b
   template:
     metadata:
       name: '{{ index .path.segments 1 }}'
