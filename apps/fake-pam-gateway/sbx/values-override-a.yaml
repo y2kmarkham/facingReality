@@ -1,3 +1,6 @@
 bgColor: "#2ecc71"
 displayText: "PAM Gateway - Active (Cluster A)"
 replicaCount: 2
+targetGroupBinding:
+  enabled: true
+  targetGroupARN: "arn:aws:elasticloadbalancing:ap-east-1:333347968576:targetgroup/aop-sandbox-active-tg/95213b50e1384325"

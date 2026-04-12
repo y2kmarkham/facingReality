@@ -1,3 +1,6 @@
 bgColor: "#3498db"
 displayText: "PAM Gateway - Preview (Cluster B)"
 replicaCount: 2
+targetGroupBinding:
+  enabled: true
+  targetGroupARN: "arn:aws:elasticloadbalancing:ap-east-1:333347968576:targetgroup/aop-sandbox-preview-tg/15fce2085b606c57"
